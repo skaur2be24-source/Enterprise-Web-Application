@@ -1,0 +1,52 @@
+public class ExceptionHierarchyDemo {
+
+    public static void main(String[] args) {
+
+        System.out.println("Exception Hierarchy Demo");
+
+        // ArithmeticException
+        try {
+            int result = 10 / 0;
+        } catch (ArithmeticException e) {
+            System.out.println("ArithmeticException: "
+                    + e.getMessage());
+        }
+
+        // NullPointerException
+        try {
+            String name = null;
+            System.out.println(name.length());
+        } catch (NullPointerException e) {
+            System.out.println("NullPointerException: "
+                    + e.getMessage());
+        }
+
+        // ArrayIndexOutOfBoundsException
+        try {
+            int[] numbers = {10, 20, 30};
+            System.out.println(numbers[5]);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("ArrayIndexOutOfBoundsException: "
+                    + e.getMessage());
+        }
+
+        // NumberFormatException
+        try {
+            int number = Integer.parseInt("abc");
+        } catch (NumberFormatException e) {
+            System.out.println("NumberFormatException: "
+                    + e.getMessage());
+        }
+
+        // Common parent class
+        System.out.println("\nHierarchy:");
+        System.out.println("Object");
+        System.out.println("  Throwable");
+        System.out.println("    Exception");
+        System.out.println("      RuntimeException");
+        System.out.println("        ArithmeticException");
+        System.out.println("        NullPointerException");
+        System.out.println("        NumberFormatException");
+        System.out.println("        IndexOutOfBoundsException");
+    }
+}
