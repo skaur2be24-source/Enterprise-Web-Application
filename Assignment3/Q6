@@ -1,0 +1,97 @@
+import java.util.Scanner;
+
+// Custom exceptions
+class InvalidUsernameException extends Exception {
+
+    public InvalidUsernameException(String message) {
+        super(message);
+    }
+}
+
+class InvalidPasswordException extends Exception {
+
+    public InvalidPasswordException(String message) {
+        super(message);
+    }
+}
+
+class AccountLockedException extends Exception {
+
+    public AccountLockedException(String message) {
+        super(message);
+    }
+}
+
+// Login system
+class LoginSystem {
+
+    private final String correctUsername = "admin";
+    private final String correctPassword = "1234";
+
+    private int failedAttempts = 0;
+    private final int maxAttempts = 3;
+
+    public void login(String username, String password)
+            throws InvalidUsernameException,
+            InvalidPasswordException,
+            AccountLockedException {
+
+        if (failedAttempts >= maxAttempts) {
+            throw new AccountLockedException(
+                    "Account is locked due to too many failed attempts.");
+        }
+
+        if (!username.equals(correctUsername)) {
+            failedAttempts++;
+            throw new InvalidUsernameException(
+                    "Invalid username.");
+        }
+
+        if (!password.equals(correctPassword)) {
+            failedAttempts++;
+            throw new InvalidPasswordException(
+                    "Invalid password.");
+        }
+
+        failedAttempts = 0;
+        System.out.println("Login successful!");
+    }
+}
+
+// Main class
+public class LoginExceptionDemo {
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+        LoginSystem loginSystem = new LoginSystem();
+
+        while (true) {
+
+            try {
+                System.out.print("\nEnter username: ");
+                String username = sc.nextLine();
+
+                System.out.print("Enter password: ");
+                String password = sc.nextLine();
+
+                loginSystem.login(username, password);
+
+                break;
+
+            } catch (InvalidUsernameException e) {
+                System.out.println("Login failed: " + e.getMessage());
+
+            } catch (InvalidPasswordException e) {
+                System.out.println("Login failed: " + e.getMessage());
+
+            } catch (AccountLockedException e) {
+                System.out.println("Security Alert: "
+                        + e.getMessage());
+                break;
+            }
+        }
+
+        sc.close();
+    }
+}
