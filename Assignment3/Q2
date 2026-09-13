@@ -1,0 +1,42 @@
+public class NestedTryCatchDemo {
+
+    public static void main(String[] args) {
+
+        try {
+            System.out.println("Outer try block started");
+
+            try {
+                System.out.println("Inner try block started");
+
+                int[] numbers = {10, 20, 30};
+                System.out.println(numbers[5]);
+
+            } catch (ArithmeticException e) {
+                System.out.println("Inner caught ArithmeticException");
+            }
+
+            System.out.println("Outer try continues");
+
+            int result = 10 / 0;
+
+        } catch (ArithmeticException e) {
+            System.out.println("Outer caught ArithmeticException: "
+                    + e.getMessage());
+        }
+
+        // Exception propagating from inner to outer
+        try {
+            try {
+                String value = null;
+                System.out.println(value.length());
+            } catch (ArithmeticException e) {
+                System.out.println("Inner arithmetic handler");
+            }
+        } catch (NullPointerException e) {
+            System.out.println("Outer caught propagated exception: "
+                    + e.getClass().getSimpleName());
+        }
+
+        System.out.println("Program completed.");
+    }
+}
