@@ -1,0 +1,164 @@
+import java.util.Scanner;
+
+// Custom exceptions
+class InsufficientBalanceException extends Exception {
+
+    public InsufficientBalanceException(String message) {
+        super(message);
+    }
+}
+
+class InvalidAmountException extends Exception {
+
+    public InvalidAmountException(String message) {
+        super(message);
+    }
+}
+
+class AccountNotFoundException extends Exception {
+
+    public AccountNotFoundException(String message) {
+        super(message);
+    }
+}
+
+// Bank account class
+class BankAccount {
+
+    private int accountNumber;
+    private double balance;
+
+    public BankAccount(int accountNumber, double balance) {
+        this.accountNumber = accountNumber;
+        this.balance = balance;
+    }
+
+    public int getAccountNumber() {
+        return accountNumber;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void deposit(double amount)
+            throws InvalidAmountException {
+
+        if (amount <= 0) {
+            throw new InvalidAmountException(
+                    "Deposit amount must be positive.");
+        }
+
+        balance += amount;
+    }
+
+    public void withdraw(double amount)
+            throws InvalidAmountException,
+            InsufficientBalanceException {
+
+        if (amount <= 0) {
+            throw new InvalidAmountException(
+                    "Withdrawal amount must be positive.");
+        }
+
+        if (amount > balance) {
+            throw new InsufficientBalanceException(
+                    "Insufficient balance.");
+        }
+
+        balance -= amount;
+    }
+}
+
+// Banking service
+class BankingService {
+
+    private BankAccount account;
+
+    public BankingService(BankAccount account) {
+        this.account = account;
+    }
+
+    public BankAccount findAccount(int accountNumber)
+            throws AccountNotFoundException {
+
+        if (account == null ||
+                account.getAccountNumber() != accountNumber) {
+
+            throw new AccountNotFoundException(
+                    "Account not found.");
+        }
+
+        return account;
+    }
+
+    public void performDeposit(int accountNumber, double amount)
+            throws AccountNotFoundException,
+            InvalidAmountException {
+
+        BankAccount acc = findAccount(accountNumber);
+        acc.deposit(amount);
+    }
+
+    public void performWithdrawal(int accountNumber, double amount)
+            throws AccountNotFoundException,
+            InvalidAmountException,
+            InsufficientBalanceException {
+
+        BankAccount acc = findAccount(accountNumber);
+        acc.withdraw(amount);
+    }
+}
+
+// Main class
+public class BankingExceptionDemo {
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        BankAccount account = new BankAccount(101, 5000);
+        BankingService service = new BankingService(account);
+
+        try {
+            System.out.print("Enter account number: ");
+            int accountNumber = Integer.parseInt(sc.nextLine());
+
+            System.out.print("Enter deposit amount: ");
+            double depositAmount =
+                    Double.parseDouble(sc.nextLine());
+
+            service.performDeposit(accountNumber, depositAmount);
+
+            System.out.println("Deposit successful.");
+            System.out.println("Balance after deposit: "
+                    + account.getBalance());
+
+            System.out.print("Enter withdrawal amount: ");
+            double withdrawalAmount =
+                    Double.parseDouble(sc.nextLine());
+
+            service.performWithdrawal(
+                    accountNumber, withdrawalAmount);
+
+            System.out.println("Withdrawal successful.");
+            System.out.println("Final balance: "
+                    + account.getBalance());
+
+        } catch (AccountNotFoundException e) {
+            System.out.println("Account Error: " + e.getMessage());
+
+        } catch (InvalidAmountException e) {
+            System.out.println("Amount Error: " + e.getMessage());
+
+        } catch (InsufficientBalanceException e) {
+            System.out.println("Balance Error: " + e.getMessage());
+
+        } catch (NumberFormatException e) {
+            System.out.println("Input Error: Enter valid numbers.");
+
+        } finally {
+            sc.close();
+        }
+    }
+}
