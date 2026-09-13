@@ -1,0 +1,235 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+// Base exception
+class ApplicationException extends Exception {
+
+    public ApplicationException(String message) {
+        super(message);
+    }
+}
+
+// Product exceptions
+class ProductException extends ApplicationException {
+
+    public ProductException(String message) {
+        super(message);
+    }
+}
+
+class ProductNotFoundException extends ProductException {
+
+    public ProductNotFoundException(String message) {
+        super(message);
+    }
+}
+
+class OutOfStockException extends ProductException {
+
+    public OutOfStockException(String message) {
+        super(message);
+    }
+}
+
+// Payment exceptions
+class PaymentException extends ApplicationException {
+
+    public PaymentException(String message) {
+        super(message);
+    }
+}
+
+class InvalidPaymentException extends PaymentException {
+
+    public InvalidPaymentException(String message) {
+        super(message);
+    }
+}
+
+class InsufficientFundsException extends PaymentException {
+
+    public InsufficientFundsException(String message) {
+        super(message);
+    }
+}
+
+// Order exceptions
+class OrderException extends ApplicationException {
+
+    public OrderException(String message) {
+        super(message);
+    }
+}
+
+class EmptyCartException extends OrderException {
+
+    public EmptyCartException(String message) {
+        super(message);
+    }
+}
+
+// Product class
+class Product {
+
+    int id;
+    String name;
+    double price;
+    int stock;
+
+    public Product(int id, String name,
+                   double price, int stock) {
+
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.stock = stock;
+    }
+}
+
+// Shopping cart
+class ShoppingCart {
+
+    private List<Product> cart = new ArrayList<>();
+
+    public void addProduct(Product product)
+            throws ProductException {
+
+        if (product == null) {
+            throw new ProductNotFoundException(
+                    "Product not found.");
+        }
+
+        if (product.stock <= 0) {
+            throw new OutOfStockException(
+                    "Product is out of stock.");
+        }
+
+        cart.add(product);
+        product.stock--;
+
+        System.out.println(product.name + " added to cart.");
+    }
+
+    public void removeProduct(int id)
+            throws ProductNotFoundException {
+
+        for (Product product : cart) {
+
+            if (product.id == id) {
+                cart.remove(product);
+                System.out.println("Product removed.");
+                return;
+            }
+        }
+
+        throw new ProductNotFoundException(
+                "Product not found in cart.");
+    }
+
+    public double getTotal() {
+
+        double total = 0;
+
+        for (Product product : cart) {
+            total += product.price;
+        }
+
+        return total;
+    }
+
+    public void displayCart() {
+
+        if (cart.isEmpty()) {
+            System.out.println("Cart is empty.");
+            return;
+        }
+
+        System.out.println("\n----- Cart Items -----");
+
+        for (Product product : cart) {
+            System.out.println(product.id + " - "
+                    + product.name + " - Rs. "
+                    + product.price);
+        }
+
+        System.out.println("Total: Rs. " + getTotal());
+    }
+
+    public void checkout(double payment)
+            throws EmptyCartException,
+            InvalidPaymentException,
+            InsufficientFundsException {
+
+        if (cart.isEmpty()) {
+            throw new EmptyCartException(
+                    "Cannot checkout an empty cart.");
+        }
+
+        double total = getTotal();
+
+        if (payment <= 0) {
+            throw new InvalidPaymentException(
+                    "Payment must be positive.");
+        }
+
+        if (payment < total) {
+            throw new InsufficientFundsException(
+                    "Insufficient funds for payment.");
+        }
+
+        System.out.println("Payment successful.");
+        System.out.println("Change: Rs. " + (payment - total));
+
+        cart.clear();
+    }
+}
+
+// Main class
+public class ShoppingCartDemo {
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        Product p1 = new Product(1, "Laptop", 50000, 2);
+        Product p2 = new Product(2, "Mouse", 800, 5);
+
+        ShoppingCart cart = new ShoppingCart();
+
+        try {
+            cart.addProduct(p1);
+            cart.addProduct(p2);
+
+            cart.displayCart();
+
+            System.out.print("\nEnter payment amount: ");
+            double payment = Double.parseDouble(sc.nextLine());
+
+            cart.checkout(payment);
+
+            System.out.println("Order placed successfully.");
+
+        } catch (ProductNotFoundException e) {
+            System.out.println("Product Error: " + e.getMessage());
+
+        } catch (OutOfStockException e) {
+            System.out.println("Stock Error: " + e.getMessage());
+
+        } catch (InvalidPaymentException e) {
+            System.out.println("Payment Error: " + e.getMessage());
+
+        } catch (InsufficientFundsException e) {
+            System.out.println("Payment Error: " + e.getMessage());
+
+        } catch (EmptyCartException e) {
+            System.out.println("Order Error: " + e.getMessage());
+
+        } catch (NumberFormatException e) {
+            System.out.println("Input Error: Enter a valid amount.");
+
+        } finally {
+            sc.close();
+        }
+    }
+}
