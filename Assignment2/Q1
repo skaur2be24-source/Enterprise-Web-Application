@@ -1,0 +1,158 @@
+
+import java.util.Scanner;
+
+// Interface
+interface Discountable {
+    double applyDiscount();
+}
+
+// Abstract class
+abstract class FoodOrder {
+    private int orderId;
+    private String customerName;
+    private double amount;
+    private static int totalOrders = 0;
+
+    public FoodOrder(int orderId, String customerName, double amount) {
+        this.orderId = orderId;
+        this.customerName = customerName;
+        this.amount = amount;
+        totalOrders++;
+    }
+
+    public int getOrderId() {
+        return orderId;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public abstract double calculateDeliveryCharge();
+
+    public static void displayTotalOrders() {
+        System.out.println("Total Orders: " + totalOrders);
+    }
+
+    public void displayBill() {
+        double discount = ((Discountable) this).applyDiscount();
+        double delivery = calculateDeliveryCharge();
+        double finalAmount = amount - discount + delivery;
+
+        System.out.println("\nOrder ID: " + orderId);
+        System.out.println("Customer: " + customerName);
+        System.out.println("Bill Amount: Rs." + amount);
+        System.out.println("Discount: Rs." + discount);
+        System.out.println("Delivery Charge: Rs." + delivery);
+        System.out.println("Final Payable Amount: Rs." + finalAmount);
+    }
+}
+
+// Regular Order
+class RegularOrder extends FoodOrder implements Discountable {
+    public RegularOrder(int id, String name, double amount) {
+        super(id, name, amount);
+    }
+
+    public double calculateDeliveryCharge() {
+        return 80;
+    }
+
+    public double applyDiscount() {
+        return getAmount() * 0.10;
+    }
+}
+
+// Premium Order
+class PremiumOrder extends FoodOrder implements Discountable {
+    public PremiumOrder(int id, String name, double amount) {
+        super(id, name, amount);
+    }
+
+    public double calculateDeliveryCharge() {
+        return 50;
+    }
+
+    public double applyDiscount() {
+        return getAmount() * 0.15;
+    }
+}
+
+// Utility class
+class OrderUtility {
+    public static boolean validateAmount(double amount) {
+        return amount > 0;
+    }
+
+    public static boolean validateCustomerName(String name) {
+        return name != null && !name.trim().isEmpty();
+    }
+
+    public static FoodOrder generateOrder(
+            int id, String name, double amount, int type) {
+
+        if (!validateAmount(amount) ||
+            !validateCustomerName(name)) {
+            return null;
+        }
+
+        if (type == 1)
+            return new RegularOrder(id, name, amount);
+        else
+            return new PremiumOrder(id, name, amount);
+    }
+}
+
+// Main class
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        FoodOrder[] orders = new FoodOrder[6];
+        int count = 0;
+
+        System.out.println("ONLINE FOOD DELIVERY SYSTEM");
+
+        while (count < 6) {
+            System.out.println("\nEnter Order " + (count + 1));
+
+            System.out.print("Order ID: ");
+            int id = sc.nextInt();
+            sc.nextLine();
+
+            System.out.print("Customer Name: ");
+            String name = sc.nextLine();
+
+            System.out.print("Amount: ");
+            double amount = sc.nextDouble();
+
+            System.out.print("Type (1-Regular, 2-Premium): ");
+            int type = sc.nextInt();
+
+            FoodOrder order = OrderUtility.generateOrder(
+                    id, name, amount, type);
+
+            if (order == null) {
+                System.out.println("Invalid input. Try again.");
+            } else {
+                orders[count] = order;
+                count++;
+                System.out.println("Order created successfully.");
+            }
+        }
+
+        System.out.println("\n===== ALL ORDERS =====");
+
+        for (FoodOrder order : orders) {
+            order.displayBill();
+        }
+
+        FoodOrder.displayTotalOrders();
+
+        sc.close();
+    }
+}
