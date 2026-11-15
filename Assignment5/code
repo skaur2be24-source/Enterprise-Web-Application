@@ -1,0 +1,289 @@
+
+import java.util.*;
+import java.time.*;
+import java.time.temporal.ChronoUnit;
+
+// Q1
+
+class Q1 {
+
+    public static <T extends Number> double sum(T arr[]) {
+        double total = 0;
+
+        for (T n : arr) {
+            total = total + n.doubleValue();
+        }
+
+        return total;
+    }
+
+    public static void main() {
+
+        Integer a[] = {10, 20, 30};
+        Float b[] = {1.5f, 2.5f, 3.5f};
+        Double c[] = {10.5, 20.5, 30.5};
+
+        System.out.println("Integer Sum: " + sum(a));
+        System.out.println("Float Sum: " + sum(b));
+        System.out.println("Double Sum: " + sum(c));
+    }
+}
+
+
+// Q2
+
+class Q2 {
+
+    public static void main() {
+
+        Optional<String> email =
+                Optional.of("student@gmail.com");
+
+        Optional<String> empty =
+                Optional.empty();
+
+        System.out.println("Student Email:");
+
+        email.ifPresent(e -> System.out.println(e));
+
+        // Providing default email
+        String e = empty.orElse("default@gmail.com");
+
+        System.out.println("Default Email: " + e);
+
+        // Handling missing email
+        try {
+            String result = empty.orElseThrow(
+                    () -> new RuntimeException("Email not found")
+            );
+
+            System.out.println(result);
+
+        } catch (RuntimeException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+}
+
+
+// Q3
+
+class Result<T extends Number> {
+
+    ArrayList<T> marks;
+    double passingMarks;
+
+    Result(ArrayList<T> marks, double passingMarks) {
+
+        this.marks = Objects.requireNonNull(marks);
+        this.passingMarks = passingMarks;
+
+        for (T m : marks) {
+            Objects.requireNonNull(m);
+        }
+
+        if (marks.isEmpty()) {
+            throw new IllegalArgumentException("Marks are empty");
+        }
+    }
+
+    // Calculate average
+    double average() {
+
+        double total = 0;
+
+        for (T m : marks) {
+            total += m.doubleValue();
+        }
+
+        return total / marks.size();
+    }
+
+    // Calculate percentage
+    double percentage() {
+        return average();
+    }
+
+    // Check pass or fail
+    boolean checkResult() {
+        return average() >= passingMarks;
+    }
+
+    // Return marks using Optional
+    Optional<Double> getMarks() {
+        return Optional.of(average());
+    }
+}
+
+class Q3 {
+
+    public static void main() {
+
+        ArrayList<Integer> marks =
+                new ArrayList<>(Arrays.asList(80, 75, 90, 85, 70));
+
+        Result<Integer> r = new Result<>(marks, 40);
+
+        System.out.println("Student Marks: " + marks);
+
+        r.getMarks().ifPresent(avg -> {
+            System.out.println("Average: " + avg);
+            System.out.println("Percentage: " +
+                    r.percentage() + "%");
+
+            if (r.checkResult()) {
+                System.out.println("Result: Pass");
+            } else {
+                System.out.println("Result: Fail");
+            }
+        });
+    }
+}
+
+
+// Q4
+
+class Q4 {
+
+    public static void main() {
+
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter Event Name: ");
+        String name = sc.nextLine();
+
+        System.out.print("Enter Event Date (YYYY-MM-DD): ");
+        LocalDate date = LocalDate.parse(sc.nextLine());
+
+        System.out.print("Enter Start Time (HH:MM): ");
+        LocalTime time = LocalTime.parse(sc.nextLine());
+
+        System.out.print("Enter Venue Name: ");
+        String v = sc.nextLine();
+
+        Optional<String> venue;
+
+        if (v.isEmpty()) {
+            venue = Optional.empty();
+        } else {
+            venue = Optional.of(v);
+        }
+
+        // Event ends after 2 hours
+        LocalTime endTime = time.plusHours(2);
+
+        LocalDate today = LocalDate.now();
+
+        System.out.println("\n----- Event Details -----");
+
+        System.out.println("Event Name: " + name);
+        System.out.println("Event Date: " + date);
+        System.out.println("Start Time: " + time);
+        System.out.println("End Time: " + endTime);
+
+        System.out.println("Venue: " +
+                venue.orElse("Venue not specified"));
+
+        // Check event date
+        if (date.isAfter(today)) {
+            System.out.println("Event is in future");
+        }
+        else if (date.isEqual(today)) {
+            System.out.println("Event is today");
+        }
+        else {
+            System.out.println("Event is in past");
+        }
+
+        // Calculate remaining days
+        long days = ChronoUnit.DAYS.between(today, date);
+
+        System.out.println("Days remaining: " + days);
+    }
+}
+
+
+// Q5
+
+class Utility {
+
+    // Check whether two objects are equal
+    public static <T> boolean isEqual(T a, T b) {
+        return Objects.equals(a, b);
+    }
+
+    // Return value or default value
+    public static <T> T getDefault(
+            Optional<T> value, T defaultValue) {
+
+        return value.orElse(defaultValue);
+    }
+
+    // Find maximum of two values
+    public static <T extends Comparable<T>> T max(T a, T b) {
+
+        if (a.compareTo(b) > 0) {
+            return a;
+        } else {
+            return b;
+        }
+    }
+
+    // Check null value
+    public static boolean isNull(Object obj) {
+        return Objects.isNull(obj);
+    }
+}
+
+class Q5 {
+
+    public static void main() {
+
+        System.out.println("String Equal: " +
+                Utility.isEqual("Java", "Java"));
+
+        System.out.println("Integer Equal: " +
+                Utility.isEqual(10, 20));
+
+        Optional<String> name = Optional.empty();
+
+        System.out.println("Default Name: " +
+                Utility.getDefault(name, "Unknown"));
+
+        System.out.println("Maximum Number: " +
+                Utility.max(10, 20));
+
+        System.out.println("Maximum String: " +
+                Utility.max("Apple", "Banana"));
+
+        String str = null;
+
+        System.out.println("Is Null: " +
+                Utility.isNull(str));
+    }
+}
+
+
+// Main Class
+// Running all five questions
+
+public class Assignment7Solutions {
+
+    public static void main(String[] args) {
+
+        System.out.println("\n===== QUESTION 1 =====");
+        Q1.main();
+
+        System.out.println("\n===== QUESTION 2 =====");
+        Q2.main();
+
+        System.out.println("\n===== QUESTION 3 =====");
+        Q3.main();
+
+        System.out.println("\n===== QUESTION 4 =====");
+        Q4.main();
+
+        System.out.println("\n===== QUESTION 5 =====");
+        Q5.main();
+    }
+}
