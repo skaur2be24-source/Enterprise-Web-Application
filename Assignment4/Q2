@@ -1,0 +1,145 @@
+
+import java.util.*;
+
+class Song {
+
+    int id;
+    String title;
+    String artist;
+
+    Song(int id, String title, String artist) {
+        this.id = id;
+        this.title = title;
+        this.artist = artist;
+    }
+
+    public String toString() {
+        return id + " - " + title + " (" + artist + ")";
+    }
+}
+
+class MediaPlayer {
+
+    LinkedList<Song> playlist = new LinkedList<>();
+
+    // Add song at the end
+    void addSong(Song s) {
+        playlist.addLast(s);
+        System.out.println("Song added: " + s.title);
+    }
+
+    // Add priority song at the front
+    void addPrioritySong(Song s) {
+        playlist.addFirst(s);
+        System.out.println("Priority song added: " + s.title);
+    }
+
+    // Remove song using ID
+    void removeSong(int id) {
+
+        Iterator<Song> it = playlist.iterator();
+
+        while (it.hasNext()) {
+
+            Song s = it.next();
+
+            if (s.id == id) {
+                it.remove();
+                System.out.println("Song removed: " + s.title);
+                return;
+            }
+        }
+
+        System.out.println("Song not found!");
+    }
+
+    // Remove duplicate songs efficiently
+    void removeDuplicates() {
+
+        HashSet<Integer> seen = new HashSet<>();
+
+        Iterator<Song> it = playlist.iterator();
+
+        while (it.hasNext()) {
+
+            Song s = it.next();
+
+            if (!seen.add(s.id)) {
+                it.remove();
+            }
+        }
+
+        System.out.println("Duplicate songs removed.");
+    }
+
+    // Display playlist
+    void displayPlaylist() {
+
+        System.out.println("\nCurrent Playlist:");
+
+        for (Song s : playlist) {
+            System.out.println(s);
+        }
+    }
+
+    // Forward navigation
+    void forwardNavigation() {
+
+        System.out.println("\nForward Navigation:");
+
+        ListIterator<Song> it = playlist.listIterator();
+
+        while (it.hasNext()) {
+            System.out.println(it.next());
+        }
+    }
+
+    // Backward navigation
+    void backwardNavigation() {
+
+        System.out.println("\nBackward Navigation:");
+
+        ListIterator<Song> it =
+                playlist.listIterator(playlist.size());
+
+        while (it.hasPrevious()) {
+            System.out.println(it.previous());
+        }
+    }
+}
+
+public class MediaPlayerDemo {
+
+    public static void main(String[] args) {
+
+        MediaPlayer mp = new MediaPlayer();
+
+        // Adding songs
+        mp.addSong(new Song(1, "Song A", "Artist A"));
+        mp.addSong(new Song(2, "Song B", "Artist B"));
+        mp.addSong(new Song(3, "Song C", "Artist C"));
+
+        // Priority insertion
+        mp.addPrioritySong(
+                new Song(4, "Song D", "Artist D"));
+
+        // Adding duplicate song
+        mp.addSong(new Song(2, "Song B", "Artist B"));
+
+        mp.displayPlaylist();
+
+        // Remove duplicate entries
+        mp.removeDuplicates();
+
+        // Remove a song
+        mp.removeSong(3);
+
+        mp.displayPlaylist();
+
+        // Forward traversal
+        mp.forwardNavigation();
+
+        // Backward traversal
+        mp.backwardNavigation();
+    }
+}
